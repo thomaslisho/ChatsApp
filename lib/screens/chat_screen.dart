@@ -1,3 +1,6 @@
+import 'package:chatsApp/widgets/chat/messages.dart';
+import 'package:chatsApp/widgets/chat/new_message.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -5,34 +8,44 @@ class ChatScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: StreamBuilder(
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting)
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          final documents = snapshot.data.documents;
-          return ListView.builder(
-            itemBuilder: (context, index) => Container(
-              child: Text(documents[index]['text']),
-              padding: EdgeInsets.all(8),
+      appBar: AppBar(
+        title: Text('Flutter Chat'),
+        actions: <Widget>[
+          DropdownButton(
+            items: [
+              DropdownMenuItem(
+                child: Container(
+                  child: Row(
+                    children: <Widget>[
+                      Icon(Icons.exit_to_app),
+                      Text('Log Out'),
+                    ],
+                  ),
+                ),
+                value: 'logout',
+              )
+            ],
+            onChanged: (value) {
+              if (value == 'logout') FirebaseAuth.instance.signOut();
+            },
+            icon: Icon(
+              Icons.more_vert,
+              color: Theme.of(context).primaryIconTheme.color,
             ),
-            itemCount: documents.length,
-          );
-        },
-        stream: Firestore.instance
-            .collection('chats/v2oWQewdxp6fYhh7KsDT/messages')
-            .snapshots(),
+          )
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Firestore.instance
-              .collection('chats/v2oWQewdxp6fYhh7KsDT/messages')
-              .add({'text': 'This was added clicking the button man'});
-        },
-        child: Icon(Icons.add),
+      body: Container(
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              child: Messages(),
+            ),
+            NewMessage(),
+          ],
+        ),
       ),
+      
     );
   }
 }
