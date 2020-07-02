@@ -212,6 +212,10 @@
         "source": "/home/lisho/.gradle/caches/transforms-2/files-2.1/6eb14f512292913515d869914807ad40/play-services-base-17.1.0/res/drawable-hdpi-v4/common_google_signin_btn_text_dark_normal_background.9.png"
     },
     {
+        "merged": "/home/lisho/Learning/Flutter/chatsApp/build/app/intermediates/res/merged/debug/xml_flutter_image_picker_file_paths.xml.flat",
+        "source": "/home/lisho/Learning/Flutter/chatsApp/build/image_picker/intermediates/packaged_res/debug/xml/flutter_image_picker_file_paths.xml"
+    },
+    {
         "merged": "/home/lisho/Learning/Flutter/chatsApp/build/app/intermediates/res/merged/debug/drawable_launch_background.xml.flat",
         "source": "/home/lisho/Learning/Flutter/chatsApp/android/app/src/main/res/drawable/launch_background.xml"
     },

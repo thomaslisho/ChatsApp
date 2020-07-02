@@ -1,6 +1,9 @@
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../widgets/auth/auth_form.dart';
@@ -17,6 +20,7 @@ class _AuthScreenState extends State<AuthScreen> {
     String email,
     String userName,
     String password,
+    File imageFile,
     bool isLogin,
     BuildContext ctx,
   ) async {
@@ -25,22 +29,32 @@ class _AuthScreenState extends State<AuthScreen> {
       _isLoading = true;
     });
     try {
-      authResult = isLogin
-          ? await _auth.signInWithEmailAndPassword(
-              email: email,
-              password: password,
-            )
-          : await _auth.createUserWithEmailAndPassword(
-              email: email,
-              password: password,
-            );
-      await Firestore.instance
-          .collection('users')
-          .document(authResult.user.uid)
-          .setData({
-        'username': userName,
-        'email': email,
-      });
+      if (isLogin) {
+        authResult = await _auth.signInWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+      } else {
+        authResult = await _auth.createUserWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+        final ref = FirebaseStorage.instance
+            .ref()
+            .child('user_image')
+            .child(authResult.user.uid + '.jpg');
+        await ref.putFile(imageFile).onComplete;
+        final url = await ref.getDownloadURL();
+        await Firestore.instance
+            .collection('users')
+            .document(authResult.user.uid)
+            .setData({
+          'username': userName,
+          'email': email,
+          'imageUrl': url,
+        });
+        print('Completed');
+      }
     } on PlatformException catch (error) {
       var message = 'An error occured, please check your credientials';
       if (error.message != null) message = error.message;
